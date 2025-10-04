@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import '../css/addTask.css'
 import useFetch from '../hooks/useFetch';
+import { useEffect } from 'react';
+
 
 const AddTask = () => {
-
-const { postData,isLoading, err } = useFetch();
+const [data, setData] = useState([])
+const { postData,isLoading, err,getData} = useFetch()
 const[taskData,setTaskdata]=useState(
   {
     title: "",
@@ -12,18 +14,25 @@ const[taskData,setTaskdata]=useState(
   }
 )
   const handleValue = (e) => {
-    setTaskdata((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    setTaskdata((prev) => ({ ...prev, [e.target.name]: e.target.value }))
   };
 
   const handleSubmit = () => {
     if (!taskData.title || !taskData.description) return;
 
     postData('http://localhost:5000/task/postTasks',taskData).then(() => {
-      setTaskdata({ title: "", description: "" });
-      
-    });
-  };
-
+      setTaskdata({ title: "", description: "" })
+      refreshTasks()
+    })
+  }
+  const refreshTasks = () => {
+    getData('http://localhost:5000/task/getTasks').then((res) => {
+      setData(res);
+    })
+  }
+ useEffect(()=>{
+  refreshTasks()
+ },[])
 
     return ( 
     <div className="mainContainer">
@@ -37,12 +46,22 @@ const[taskData,setTaskdata]=useState(
            <div className="btn" onClick={handleSubmit}>Add</div>
         </div>
       </div>
-
-
-
+      <div className="displayTask">
+        {isLoading ? (
+          <p>Loading...</p>
+        ) : (
+          data.map((item, index) => (
+            <div className="taskList" key={index}>
+              <h2>{item.title}</h2>
+              <p>{item.description}</p>
+              <div className="doneBtn">Done</div>
+            </div>
+          ))
+        )}
+      </div>
 
     </div>
-     );
+     )
 }
  
 export default AddTask;
