@@ -18,5 +18,14 @@ exports.getTasks=async(req,res)=>{
         console.log('Error from controller',err)
     })
 }
+exports.deleteTask=async(req,res)=>{
+    const { id } = req.params;
+    tasks.deleteTaskData(id).then((reslovedData)=>{
+        console.log('controller fired',reslovedData)
+        res.json()
+    }).catch((err)=>{
+        console.log('Error from controller',err)
+    })
+}
 
 
