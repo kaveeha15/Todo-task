@@ -3,7 +3,6 @@ import '../css/addTask.css'
 import useFetch from '../hooks/useFetch';
 import { useEffect } from 'react';
 
-
 const AddTask = () => {
 const [data, setData] = useState([])
 const { postData,isLoading, err,getData} = useFetch()
@@ -22,17 +21,30 @@ const[taskData,setTaskdata]=useState(
 
     postData('http://localhost:5000/task/postTasks',taskData).then(() => {
       setTaskdata({ title: "", description: "" })
+       alert("Task added to the todo list.")
       refreshTasks()
     })
   }
+
   const refreshTasks = () => {
-    getData('http://localhost:5000/task/getTasks').then((res) => {
-      setData(res);
-    })
-  }
- useEffect(()=>{
-  refreshTasks()
- },[])
+  getData('http://localhost:5000/task/getTasks').then((res) => {
+    setData(res.reverse()); 
+  })
+  }  
+
+  useEffect(()=>{
+     refreshTasks()
+  },[])
+  
+
+   const handleDelete = (id) => {
+    fetch(`http://localhost:5000/task/deleteTask/${id}`, { method: 'DELETE' })
+      .then(() => {
+        alert("Task is completed!");
+        refreshTasks();
+      });
+  };
+
 
     return ( 
     <div className="mainContainer">
@@ -54,7 +66,7 @@ const[taskData,setTaskdata]=useState(
             <div className="taskList" key={index}>
               <h2>{item.title}</h2>
               <p>{item.description}</p>
-              <div className="doneBtn">Done</div>
+              <div className="doneBtn" onClick={() => handleDelete(item.id)}>Done</div>
             </div>
           ))
         )}

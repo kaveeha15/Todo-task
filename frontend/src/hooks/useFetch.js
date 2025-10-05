@@ -28,7 +28,7 @@ const useFetch = () => {
         })
         setIsloading(false)
         return responce
-    }
+     }
     return{isLoading,err,postData,getData}
 }
  
